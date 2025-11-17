@@ -1,21 +1,26 @@
-import '../core/api_client.dart';
+import '../interfaces/i_api_client.dart';
+import '../interfaces/i_auth_service.dart';
 
-class AuthService {
-    final ApiClient apiClient;
+class AuthService implements IAuthService {
+    final IApiClient apiClient;
     AuthService(this.apiClient);
 
+    @override
     Future<Map<String, dynamic>> initiateLogin(String numero) async {
         return await apiClient.post('/api/v1/auth/initiate-login', {'numeroTelephone': numero});
     }
 
+    @override
     Future<Map<String, dynamic>> verifyOtp(String token, String otp) async {
         return await apiClient.post('/api/v1/auth/verify-otp', {'token': token, 'otp': otp});
     }
 
+    @override
     Future<Map<String, dynamic>> login(String numero, String pin) async {
         return await apiClient.post('/api/v1/auth/login', {'numeroTelephone': numero, 'pin': pin});
     }
 
+    @override
     Future<Map<String,dynamic>> me() async{
         return await apiClient.get('/api/v1/auth/me');
     }

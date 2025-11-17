@@ -1,0 +1,39 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": ""
+      }
+    },
+    "puppeteer": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.38"
+      ]
+    },
+    "google-maps-platform-code-assist": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@googlemaps/code-assist-mcp@0.2.0"
+      ]
+    },
+    "microsoft-learn": {
+      "type": "streamable-http",
+      "url": "https://learn.microsoft.com/api/mcp"
+    }
+  }
+}
