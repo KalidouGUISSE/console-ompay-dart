@@ -1,4 +1,4 @@
-import '../interfaces/i_command.dart';
+import '../commands/i_command.dart';
 import '../utils/menu_display.dart';
 
 class MenuController {

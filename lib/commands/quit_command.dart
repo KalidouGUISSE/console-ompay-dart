@@ -1,4 +1,4 @@
-import '../interfaces/i_command.dart';
+import './i_command.dart';
 
 class QuitCommand implements ICommand {
     @override

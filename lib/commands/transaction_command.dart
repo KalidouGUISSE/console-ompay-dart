@@ -1,15 +1,16 @@
 import 'dart:io';
-import '../interfaces/i_command.dart';
-import '../interfaces/i_transaction_repository.dart';
-import '../interfaces/i_api_client.dart';
+import './i_command.dart';
+import '../core/i_api_client.dart';
 import '../core/constants.dart';
+import '../services/i_transaction_service.dart';
+
 
 class TransactionCommand implements ICommand {
 
-  final ITransactionRepository transactionRepository;
+    final ITransactionService service;
   final IApiClient apiClient;
 
-  TransactionCommand(this.transactionRepository, this.apiClient);
+  TransactionCommand(this.service, this.apiClient);
 
   @override
   Future<void> execute() async {
@@ -58,10 +59,11 @@ class TransactionCommand implements ICommand {
     }
 
     // 🔥 Méthode privée - applique le principe SRP + OCP
-    Future<void> _listTransactions() async {
+    Future<void> _listTransactions() async 
+    {
         try 
         {
-            final result = await transactionRepository.getAllTransactions();
+            final result = await service.getAllTransactions();
             print("📄 Transactions : $result");
         } catch (e) 
         {
@@ -73,7 +75,7 @@ class TransactionCommand implements ICommand {
     {
         try 
         {
-            final result = await transactionRepository.getSolde();
+            final result = await service.getSolde();
             print("📄 Transactions : $result");
         } catch (e) 
         {
@@ -81,7 +83,8 @@ class TransactionCommand implements ICommand {
         }
     }
 
-    Future<void> _effectuerTransaction() async {
+    Future<void> _effectuerTransaction() async 
+    {
 
         print("\n📌 Effectuer une transactions");
 
@@ -95,43 +98,39 @@ class TransactionCommand implements ICommand {
         String? type_transaction = stdin.readLineSync();
 
         if (numero == null || numero.isEmpty || montant == null || montant.isEmpty || type_transaction == null || type_transaction.isEmpty ) {
-            print("❌ les champs ne doitve pas etre vide invalide");
+            print("❌ Tous les champs sont requis");
             return;
         }
 
-        if(type_transaction != "transfert" && type_transaction != "Transfert d'argent" && type_transaction != "dépôt" && type_transaction != "retrait"){
-            print("❌ type de transaction invalide");
-            return;
-        }
-
-        try 
+        try
         {
-            final result = await transactionRepository.creerTransaction(numero,montant,type_transaction);
-            print("📄 Transactions : $result");
-        } catch (e) 
+            final result = await service.creerTransaction(numero,montant,type_transaction);
+            print("📄 Transaction créée : $result");
+        } catch (e)
         {
-            print("❌ Erreur API : $e");
+            print("❌ Erreur : $e");
         }
     }
 
-    Future<void> _transactionById() async {
+    Future<void> _transactionById() async 
+    {
         print("\n📌 Recuperer une Transaction par id");
 
         stdout.write("Saisir l'id : ");
         String? id = stdin.readLineSync();
 
         if (id == null || id.isEmpty) {
-            print("❌ id invalide");
+            print("❌ ID requis");
             return;
         }
 
         try
         {
-            final result = await transactionRepository.getByIdTransactions(id);
+            final result = await service.getByIdTransactions(id);
             print(result);
         }catch (e)
         {
-            print("❌ Erreur API : $e");
+            print("❌ Erreur : $e");
         }
     }
 }

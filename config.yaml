@@ -1,0 +1,11 @@
+api:
+  base_url: "http://127.0.0.1:8000"
+  timeout: 30
+  retry_attempts: 3
+
+app:
+  token_expiry_minutes: 30
+  cache_ttl_minutes: 5
+
+logging:
+  level: "INFO"

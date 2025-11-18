@@ -1,5 +1,7 @@
-import '../interfaces/i_api_client.dart';
-import '../interfaces/i_auth_service.dart';
+import '../core/i_api_client.dart';
+import './i_auth_service.dart';
+import '../utils/validators.dart';
+import '../core/exceptions.dart';
 
 class AuthService implements IAuthService {
     final IApiClient apiClient;
@@ -7,11 +9,17 @@ class AuthService implements IAuthService {
 
     @override
     Future<Map<String, dynamic>> initiateLogin(String numero) async {
+        if (!Validator.isValidPhoneNumber(numero)) {
+            throw ValidationException('Numéro de téléphone invalide');
+        }
         return await apiClient.post('/api/v1/auth/initiate-login', {'numeroTelephone': numero});
     }
 
     @override
     Future<Map<String, dynamic>> verifyOtp(String token, String otp) async {
+        if (!Validator.isValidOtp(otp)) {
+            throw ValidationException('OTP invalide');
+        }
         return await apiClient.post('/api/v1/auth/verify-otp', {'token': token, 'otp': otp});
     }
 

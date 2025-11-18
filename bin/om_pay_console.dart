@@ -1,10 +1,7 @@
 import 'dart:io';
-import 'package:om_pay_console/interfaces/i_api_client.dart';
-import 'package:om_pay_console/interfaces/i_auth_service.dart';
-import 'package:om_pay_console/interfaces/i_auth_repository.dart';
-import 'package:om_pay_console/interfaces/i_transaction_repository.dart';
-import 'package:om_pay_console/interfaces/i_transaction_service.dart';
-
+import 'package:om_pay_console/core/i_api_client.dart';
+import 'package:om_pay_console/services/i_auth_service.dart';
+import 'package:om_pay_console/services/i_transaction_service.dart';
 
 import 'package:om_pay_console/core/api_client.dart';
 import 'package:om_pay_console/core/constants.dart';
@@ -12,11 +9,10 @@ import 'package:om_pay_console/core/constants.dart';
 import 'package:om_pay_console/services/auth_service.dart';
 import 'package:om_pay_console/services/transaction_service.dart';
 
-import 'package:om_pay_console/repositories/auth_repository.dart';
-import 'package:om_pay_console/repositories/transaction_repository.dart';
-
 import 'package:om_pay_console/controllers/menu_controller.dart';
 import 'package:om_pay_console/utils/menu_display.dart';
+import 'package:om_pay_console/utils/logger.dart';
+import 'package:om_pay_console/core/config.dart';
 
 import 'package:om_pay_console/commands/login_command.dart';
 import 'package:om_pay_console/commands/transaction_command.dart';
@@ -24,19 +20,23 @@ import 'package:om_pay_console/commands/quit_command.dart';
 import 'package:om_pay_console/commands/list_accounts_transactions.dart';
 
 void main() async {
+  // Chargement de la configuration
+  Config.load();
+
+  // Configuration du logger
+  AppLogger.setup();
+
   // Injection de dépendances (Dependency Inversion Principle)
-  final IApiClient apiClient = ApiClient(baseUrl: 'http://127.0.0.1:8000');
+  final IApiClient apiClient = ApiClient(baseUrl: Config.baseUrl);
   final IAuthService authService = AuthService(apiClient);
-  final IAuthRepository authRepository = AuthRepository(authService);
   final ITransactionService transactionService = TransactionService(apiClient);
-  final ITransactionRepository transactionRepository = TransactionRepository(transactionService);
 
   final menuController = MenuController(
     MenuDisplay(),
     {
-      1: LoginCommand(authRepository, apiClient),
+      1: LoginCommand(authService, apiClient),
       // 2: ListAccountsTransactions(transactionRepository, apiClient),
-      2: TransactionCommand(transactionRepository, apiClient),
+      2: TransactionCommand(transactionService, apiClient),
       0: QuitCommand(),
     },
   );

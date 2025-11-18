@@ -1,12 +1,12 @@
-import '../interfaces/i_command.dart';
-import '../interfaces/i_transaction_repository.dart';
-import '../interfaces/i_api_client.dart';
+import './i_command.dart';
+import '../core/i_api_client.dart';
+import '../services/i_transaction_service.dart';
 
 class ListAccountsTransactions implements ICommand {
-    final ITransactionRepository transactionRepository;
+    final ITransactionService transactionService;
     final IApiClient apiClient;
 
-    ListAccountsTransactions(this.transactionRepository, this.apiClient);
+    ListAccountsTransactions(this.transactionService, this.apiClient);
 
     @override
     Future<void> execute() async {
