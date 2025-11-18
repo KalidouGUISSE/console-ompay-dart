@@ -7,10 +7,10 @@ class User {
   User({required this.id, required this.nom, required this.prenom, required this.role});
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json['id'],
-    nom: json['nom'],
-    prenom: json['prenom'],
-    role: json['role'],
+    id: json['id'] as String? ?? '',
+    nom: json['nom'] as String? ?? '',
+    prenom: json['prenom'] as String? ?? '',
+    role: json['role'] as String? ?? '',
   );
 
   Map<String, dynamic> toJson() {

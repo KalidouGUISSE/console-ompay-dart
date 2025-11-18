@@ -1,5 +1,6 @@
 import '../commands/i_command.dart';
 import '../utils/menu_display.dart';
+import '../core/constants.dart';
 
 class MenuController {
     final MenuDisplay menuDisplay;
@@ -13,7 +14,7 @@ class MenuController {
             await action.execute();
             return choice == 0; // Quitter
         } else {
-            print("Choix invalide");
+            Messages.showError(Messages.invalidChoiceDefault);
             return false;
         }
     }

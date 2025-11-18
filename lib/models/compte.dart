@@ -21,14 +21,14 @@ class Compte {
 
     factory Compte.fromJson(Map<String, dynamic> json) {
         return Compte(
-        id: json['id'],
-        numeroCompte: json['numeroCompte'],
-        numeroTelephone: json['numeroTelephone'],
-        type: json['type'],
-        statut: json['statut'],
-        dateCreation: DateTime.parse(json['dateCreation']),
-        metadata: json['metadata'],
-        codeQr: json['code_qr'],
+        id: json['id'] as String? ?? '',
+        numeroCompte: json['numero_compte'] as String? ?? json['numeroCompte'] as String? ?? '',
+        numeroTelephone: json['numeroTelephone'] as String?,
+        type: json['type'] as String? ?? '',
+        statut: json['statut'] as String? ?? '',
+        dateCreation: DateTime.tryParse(json['date_creation'] as String? ?? json['dateCreation'] as String? ?? '') ?? DateTime.now(),
+        metadata: json['metadata'] as Map<String, dynamic>?,
+        codeQr: json['code_qr'] as String? ?? json['codeQr'] as String?,
         );
     }
 

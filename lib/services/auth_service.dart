@@ -3,6 +3,7 @@ import './i_auth_service.dart';
 import '../utils/validators.dart';
 import '../core/exceptions.dart';
 import '../models/user.dart';
+import '../models/me_response.dart';
 
 class AuthService implements IAuthService {
     final IApiClient apiClient;
@@ -30,8 +31,8 @@ class AuthService implements IAuthService {
     }
 
     @override
-    Future<Map<String, dynamic>> me() async{
-        return await apiClient.get('/api/v1/auth/me') as Map<String, dynamic>;
-        // return User.fromJson(response);
+    Future<MeResponse> me() async{
+        final response = await apiClient.get('/api/v1/auth/me') as Map<String, dynamic>;
+        return MeResponse.fromJson(response);
     }
 }

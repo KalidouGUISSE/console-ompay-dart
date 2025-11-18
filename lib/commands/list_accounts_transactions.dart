@@ -1,5 +1,6 @@
 import './i_command.dart';
 import '../core/i_api_client.dart';
+import '../core/constants.dart';
 import '../services/i_transaction_service.dart';
 
 class ListAccountsTransactions implements ICommand {
@@ -10,7 +11,7 @@ class ListAccountsTransactions implements ICommand {
 
     @override
     Future<void> execute() async {
-        print("Fonctionnalité 'Lister les transactions' non implémentée.");
+        print(Messages.transactionsNotImplemented);
 
     }
 }

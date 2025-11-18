@@ -1,6 +1,7 @@
 import 'dart:io';
 import './i_command.dart';
 import '../core/i_api_client.dart';
+import '../core/constants.dart';
 import '../utils/menu_display.dart';
 import '../services/i_auth_service.dart';
 
@@ -17,28 +18,28 @@ class LoginCommand implements ICommand {
     stdout.write("Numéro de téléphone (+221...): ");
     String? numero = stdin.readLineSync();
     if (numero == null || numero.isEmpty) {
-      print("Numéro requis");
+      Messages.showError(Messages.requiredField);
       return;
     }
 
     try {
       final result = await service.initiateLogin(numero);
-      menuDisplay.showSuccess("Numéro validé");
+      Messages.showSuccess("Numéro validé");
 
       // Afficher le code OTP pour les tests
       final otpServeur = result['data']['otp'].toString();
-      print("Code OTP : $otpServeur");
+      print(Messages.otpDisplay(otpServeur));
 
       stdout.write("Saisir le code OTP envoyé : ");
       String? otp = stdin.readLineSync();
 
       if (otp == null || otp.isEmpty) {
-        menuDisplay.showError("OTP requis");
+        Messages.showError("OTP requis");
         return;
       }
 
       if (otp != otpServeur) {
-        menuDisplay.showError("OTP incorrect");
+        Messages.showError("OTP incorrect");
         return;
       }
 
@@ -51,8 +52,16 @@ class LoginCommand implements ICommand {
       apiClient.setToken(resultFinal['data']['access_token']);
       apiClient.numero = numero;
 
-      final infoCompte = await service.me();
-      print(infoCompte);
+      final meResponse = await service.me();
+      if (meResponse.isValid() && meResponse.data != null) {
+        Messages.showSuccess("Informations du compte récupérées");
+        print("👤 Utilisateur: ${meResponse.data!.user.nom} ${meResponse.data!.user.prenom}");
+        print("🏦 Compte: ${meResponse.data!.compte.numeroCompte}");
+        print("💰 Solde: ${meResponse.data!.compte.statut}");
+        print("📄 Dernières transactions: ${meResponse.data!.dernieresTransactions.length}");
+      } else {
+        Messages.showError("Impossible de récupérer les informations du compte");
+      }
     } catch (e) {
       menuDisplay.showError("Erreur : $e");
     }

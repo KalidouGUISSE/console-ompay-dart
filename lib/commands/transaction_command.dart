@@ -16,13 +16,13 @@ TransactionCommand(this.service, this.apiClient);
 Future<void> execute() async {
     // 🔥 Ici on applique le Single Responsibility : Cette classe ne s’occupe QUE d’une action
 
-    print("\n=== MENU TRANSACTION ===");
-    print("1. Lister les transactions");
-    print("2. Faire une transaction");
-    print("3. Récupérer une transaction");
-    print("4. Voir solde");
-    print("0. Quitter");
-    stdout.write("Votre choix : ");
+    print(Messages.transactionMenuTitle);
+    print(Messages.transactionMenuOption1);
+    print(Messages.transactionMenuOption2);
+    print(Messages.transactionMenuOption3);
+    print(Messages.transactionMenuOption4);
+    print(Messages.transactionMenuOption0);
+    stdout.write(Messages.mainMenuPrompt);
 
     String? input = stdin.readLineSync();
     int? choice = int.tryParse(input ?? '');
@@ -50,7 +50,7 @@ Future<void> execute() async {
             break;
 
         case 0:
-            print("👋 Retour au menu principal...");
+            print(Messages.backToMainMenu);
             break;
 
         default:
@@ -65,27 +65,27 @@ Future<void> execute() async {
         {
             final transactions = await service.getAllTransactions();
             if (transactions.isEmpty) {
-                print("📄 Aucune transaction trouvée");
+                Messages.showInfo(Messages.transactionNotFound);
                 return;
             }
 
-            print("📄 Liste des transactions (${transactions.length}):");
+            print(Messages.transactionCount(transactions.length));
             print("-" * 80);
             for (final transaction in transactions) {
-                print("ID: ${transaction.id}");
-                print("Type: ${transaction.typeTransaction}");
-                print("Numéro: ${transaction.expediteur}");
-                print("Montant: ${transaction.montant} FCFA");
-                print("Date: ${transaction.date.toLocal()}");
-                print("Référence: ${transaction.reference}");
+                print("${Messages.labelId}${transaction.id}");
+                print("${Messages.labelType}${transaction.typeTransaction}");
+                print("${Messages.labelPhone}${transaction.expediteur}");
+                print("${Messages.labelAmount}${transaction.montant}${Messages.currency}");
+                print("${Messages.labelDate}${transaction.date.toLocal()}");
+                print("${Messages.labelReference}${transaction.reference}");
                 if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
-                    print("Métadonnées: ${transaction.metadata}");
+                    print("${Messages.labelMetadata}${transaction.metadata}");
                 }
                 print("-" * 80);
             }
         } catch (e)
         {
-            print("❌ Erreur API : $e");
+            print("${Messages.apiErrorGeneric}$e");
         }
     }
 
@@ -94,29 +94,29 @@ Future<void> execute() async {
         try 
         {
             final result = await service.getSolde();
-            print("📄 Solde : $result");
-        } catch (e) 
+            print("${Messages.transactionBalance}$result");
+        } catch (e)
         {
-            print("❌ Erreur API : $e");
+            Messages.showError("Erreur lors de la récupération du solde : $e");
         }
     }
 
     Future<void> _effectuerTransaction() async 
     {
 
-        print("\n📌 Effectuer une transactions");
+        print(Messages.transactionCreatePrompt);
 
-        stdout.write("Saisir le numéro du destinataire : ");
+        stdout.write(Messages.transactionCreateRecipientPrompt);
         String? numero = stdin.readLineSync();
 
-        stdout.write("Saisir le montant : ");
+        stdout.write(Messages.transactionCreateAmountPrompt);
         String? montant = stdin.readLineSync();
 
-        stdout.write("Type de transaction ?: transfert, Transfert d'argent, dépôt ou retrait : \n");
+        stdout.write(Messages.transactionCreateTypePrompt);
         String? type_transaction = stdin.readLineSync();
 
         if (numero == null || numero.isEmpty || montant == null || montant.isEmpty || type_transaction == null || type_transaction.isEmpty ) {
-            print("❌ Tous les champs sont requis");
+            Messages.showError(Messages.requiredField);
             return;
         }
 
@@ -124,60 +124,61 @@ Future<void> execute() async {
         {
             final montantDouble = double.tryParse(montant);
             if (montantDouble == null) {
-                print("❌ Montant invalide");
+                Messages.showError(Messages.invalidAmount);
                 return;
             }
             final transaction = await service.creerTransaction(numero, montantDouble, type_transaction);
-            print("📄 Transaction créée avec succès:");
+            Messages.showSuccess("Transaction créée avec succès");
             print("-" * 80);
-            print("ID: ${transaction.id}");
-            print("Type: ${transaction.typeTransaction}");
-            print("Expéditeur: ${transaction.expediteur}");
-            print("Destinataire: ${transaction.destinataire}");
-            print("Montant: ${transaction.montant} FCFA");
-            print("Date: ${transaction.date.toLocal()}");
-            print("Référence: ${transaction.reference}");
+            print("-" * 80);
+            print("${Messages.labelId}${transaction.id}");
+            print("${Messages.labelType}${transaction.typeTransaction}");
+            print("${Messages.labelSender}${transaction.expediteur}");
+            print("${Messages.labelRecipient}${transaction.destinataire}");
+            print("${Messages.labelAmount}${transaction.montant}${Messages.currency}");
+            print("${Messages.labelDate}${transaction.date.toLocal()}");
+            print("${Messages.labelReference}${transaction.reference}");
             if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
-                print("Métadonnées: ${transaction.metadata}");
+                print("${Messages.labelMetadata}${transaction.metadata}");
             }
             print("-" * 80);
         } catch (e)
         {
-            print("❌ Erreur : $e");
+            Messages.showError("Erreur lors de la création : $e");
         }
     }
 
     Future<void> _transactionById() async
     {
-        print("\n📌 Récupérer une Transaction par id");
+        print(Messages.transactionByIdPrompt);
 
-        stdout.write("Saisir l'id : ");
+        stdout.write(Messages.transactionByIdIdPrompt);
         String? id = stdin.readLineSync();
 
         if (id == null || id.isEmpty) {
-            print("❌ ID requis");
+            Messages.showError(Messages.requiredId);
             return;
         }
 
         try
         {
             final transaction = await service.getByIdTransactions(id);
-            print("📄 Transaction trouvée:");
+            print(Messages.transactionFound);
             print("-" * 80);
-            print("ID: ${transaction.id}");
-            print("Type: ${transaction.typeTransaction}");
-            print("Expéditeur: ${transaction.expediteur}");
-            print("Destinataire: ${transaction.destinataire}");
-            print("Montant: ${transaction.montant} FCFA");
-            print("Date: ${transaction.date.toLocal()}");
-            print("Référence: ${transaction.reference}");
+            print("${Messages.labelId}${transaction.id}");
+            print("${Messages.labelType}${transaction.typeTransaction}");
+            print("${Messages.labelSender}${transaction.expediteur}");
+            print("${Messages.labelRecipient}${transaction.destinataire}");
+            print("${Messages.labelAmount}${transaction.montant}${Messages.currency}");
+            print("${Messages.labelDate}${transaction.date.toLocal()}");
+            print("${Messages.labelReference}${transaction.reference}");
             if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
-                print("Métadonnées: ${transaction.metadata}");
+                print("${Messages.labelMetadata}${transaction.metadata}");
             }
             print("-" * 80);
         }catch (e)
         {
-            print("❌ Erreur : $e");
+            Messages.showError("Erreur lors de la récupération : $e");
         }
     }
 }
