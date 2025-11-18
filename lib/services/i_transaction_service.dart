@@ -1,7 +1,9 @@
+import '../models/transaction.dart';
+import '../models/compte.dart';
+
 abstract class ITransactionService {
-    Future<Map<String, dynamic>> getAllTransactions();
-    Future<Map<String, dynamic>> getByIdTransactions(String id);
-    Future<Map<String, dynamic>> getSolde();
-    Future<Map<String, dynamic>> creerTransaction(String numero, String montant, String type_transaction);
-    Future<Map<String, dynamic>> getTransactionsAndSolde();
+    Future<List<Transaction>> getAllTransactions();
+    Future<Transaction> getByIdTransactions(String id);
+    Future<double> getSolde();
+    Future<Transaction> creerTransaction(String numero, double montant, String typeTransaction);
 }

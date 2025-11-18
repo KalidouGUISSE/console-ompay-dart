@@ -1,3 +1,5 @@
+import '../models/user.dart';
+
 abstract class IAuthService {
   Future<Map<String, dynamic>> initiateLogin(String numero);
   Future<Map<String, dynamic>> verifyOtp(String token, String otp);

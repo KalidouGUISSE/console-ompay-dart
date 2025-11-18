@@ -7,13 +7,13 @@ import '../services/i_transaction_service.dart';
 
 class TransactionCommand implements ICommand {
 
-    final ITransactionService service;
-  final IApiClient apiClient;
+final ITransactionService service;
+final IApiClient apiClient;
 
-  TransactionCommand(this.service, this.apiClient);
+TransactionCommand(this.service, this.apiClient);
 
-  @override
-  Future<void> execute() async {
+@override
+Future<void> execute() async {
     // 🔥 Ici on applique le Single Responsibility : Cette classe ne s’occupe QUE d’une action
 
     print("\n=== MENU TRANSACTION ===");
@@ -59,13 +59,31 @@ class TransactionCommand implements ICommand {
     }
 
     // 🔥 Méthode privée - applique le principe SRP + OCP
-    Future<void> _listTransactions() async 
+    Future<void> _listTransactions() async
     {
-        try 
+        try
         {
-            final result = await service.getAllTransactions();
-            print("📄 Transactions : $result");
-        } catch (e) 
+            final transactions = await service.getAllTransactions();
+            if (transactions.isEmpty) {
+                print("📄 Aucune transaction trouvée");
+                return;
+            }
+
+            print("📄 Liste des transactions (${transactions.length}):");
+            print("-" * 80);
+            for (final transaction in transactions) {
+                print("ID: ${transaction.id}");
+                print("Type: ${transaction.typeTransaction}");
+                print("Numéro: ${transaction.expediteur}");
+                print("Montant: ${transaction.montant} FCFA");
+                print("Date: ${transaction.date.toLocal()}");
+                print("Référence: ${transaction.reference}");
+                if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
+                    print("Métadonnées: ${transaction.metadata}");
+                }
+                print("-" * 80);
+            }
+        } catch (e)
         {
             print("❌ Erreur API : $e");
         }
@@ -76,7 +94,7 @@ class TransactionCommand implements ICommand {
         try 
         {
             final result = await service.getSolde();
-            print("📄 Transactions : $result");
+            print("📄 Solde : $result");
         } catch (e) 
         {
             print("❌ Erreur API : $e");
@@ -104,17 +122,34 @@ class TransactionCommand implements ICommand {
 
         try
         {
-            final result = await service.creerTransaction(numero,montant,type_transaction);
-            print("📄 Transaction créée : $result");
+            final montantDouble = double.tryParse(montant);
+            if (montantDouble == null) {
+                print("❌ Montant invalide");
+                return;
+            }
+            final transaction = await service.creerTransaction(numero, montantDouble, type_transaction);
+            print("📄 Transaction créée avec succès:");
+            print("-" * 80);
+            print("ID: ${transaction.id}");
+            print("Type: ${transaction.typeTransaction}");
+            print("Expéditeur: ${transaction.expediteur}");
+            print("Destinataire: ${transaction.destinataire}");
+            print("Montant: ${transaction.montant} FCFA");
+            print("Date: ${transaction.date.toLocal()}");
+            print("Référence: ${transaction.reference}");
+            if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
+                print("Métadonnées: ${transaction.metadata}");
+            }
+            print("-" * 80);
         } catch (e)
         {
             print("❌ Erreur : $e");
         }
     }
 
-    Future<void> _transactionById() async 
+    Future<void> _transactionById() async
     {
-        print("\n📌 Recuperer une Transaction par id");
+        print("\n📌 Récupérer une Transaction par id");
 
         stdout.write("Saisir l'id : ");
         String? id = stdin.readLineSync();
@@ -126,8 +161,20 @@ class TransactionCommand implements ICommand {
 
         try
         {
-            final result = await service.getByIdTransactions(id);
-            print(result);
+            final transaction = await service.getByIdTransactions(id);
+            print("📄 Transaction trouvée:");
+            print("-" * 80);
+            print("ID: ${transaction.id}");
+            print("Type: ${transaction.typeTransaction}");
+            print("Expéditeur: ${transaction.expediteur}");
+            print("Destinataire: ${transaction.destinataire}");
+            print("Montant: ${transaction.montant} FCFA");
+            print("Date: ${transaction.date.toLocal()}");
+            print("Référence: ${transaction.reference}");
+            if (transaction.metadata != null && transaction.metadata!.isNotEmpty) {
+                print("Métadonnées: ${transaction.metadata}");
+            }
+            print("-" * 80);
         }catch (e)
         {
             print("❌ Erreur : $e");

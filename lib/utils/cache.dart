@@ -19,8 +19,13 @@ class SimpleCache {
         _cache[key] = _CacheEntry(value, DateTime.now().add(ttl));
     }
 
+    /// Supprime une entrée spécifique du cache.
+    static void remove(String key) {
+        _cache.remove(key);
+    }
+
     // Vide le cache.
-    static void clear() 
+    static void clear()
     {
         _cache.clear();
     }
